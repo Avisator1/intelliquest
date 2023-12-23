@@ -7,7 +7,19 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', home=True)
+
+@app.route('/login')
+def login():
+    return render_template('login.html', login=True)
+
+@app.route('/register')
+def register():
+    return render_template('register.html', register=True)
+
+@app.route('/getstarted')
+def started():
+    return render_template('started.html', started=True)
 
 @app.route('/image', methods=['POST'])
 def image():
