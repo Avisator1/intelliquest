@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IntelliQuest AI</title>
+</head>
+<body class="d-flex flex-column h-100">
+    <nav class="navbar fontRobot navbar-expand-lg bg-body-transparent">
+        <div class="container-fluid justify-content-center">
+            <a class="navbar-brand" href="#">IntelliQuest</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse flex-grow-0" id="navbarNav">
+                <ul class="navbar-nav text-center">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/ai">AI</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/feedback">Feedback</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/login">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/register">Register</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link disabled" href="/admin" aria-disabled="true">Admin</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="centered-text flex-grow-1 d-flex flex-column align-items-center justify-content-center">
+        <p class="solution-text">the solution to school work.</p>
+        <p class="TechYear">2024 Tech Fair Project</p>
+        <video id="cameraView" style="width: 100%; max-width: 640px;" playsinline autoplay></video>
+        <button id="takePictureBtn" class="btn btn-primary mt-3">Take Picture</button>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const cameraView = document.getElementById('cameraView');
+            const takePictureBtn = document.getElementById('takePictureBtn');
+
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function (stream) {
+                    cameraView.srcObject = stream;
+                })
+                .catch(function (error) {
+                    console.error('Error accessing webcam:', error);
+                });
+
+            takePictureBtn.addEventListener('click', () => {
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.width = cameraView.videoWidth;
+                canvas.height = cameraView.videoHeight;
+                context.drawImage(cameraView, 0, 0, canvas.width, canvas.height);
+
+                // Get the base64-encoded image data without metadata
+                const imgData = canvas.toDataURL('image/png').split(',')[1];
+
+                $.ajax({
+                    url: '/image',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ 'imageData': imgData }),
+                    success: function (response) {
+                        console.log(response);  // Log the response from the server
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                });
+
+                const tracks = cameraView.srcObject.getTracks();
+                tracks.forEach(track => track.stop());
+                cameraView.srcObject = null;
+            });
+        });
+    </script>
+</body>
+</html>

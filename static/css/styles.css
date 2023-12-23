@@ -1,0 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto&display=swap');
+
+.fontRobot {
+    font-family: 'Roboto', sans-serif !important;
+}
+.centered-text {
+    font-family: 'Roboto', sans-serif !important;
+    text-align: center;
+}
+
+.solution-text {
+    font-size: 18px;
+}
+.TechYear {
+    font-size: 16px;
+}
