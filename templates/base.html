@@ -46,6 +46,10 @@
       margin-top: auto;
       width: 100%;
     }
+    /* New class for transparent card background */
+    .transparent-card {
+      background-color: rgba(6, 5, 5, 0.5) !important;
+    }
   </style>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -83,7 +87,7 @@
     <img src="/static/img/Intelliquest AI.png" alt="Logo" width="120" height="120">
     <h1 class="text-white">IntelliQuest</h1>
     <p class="text-white">Igniting Innovation</p>
-    {% if home %}P<a class="btn btn-dark" href="/getstarted" role="button">Get Started</a>{% endif %}
+    {% if home %}<a class="btn btn-dark" href="/getstarted" role="button">Get Started</a>{% endif %}
   </header>
   {% block content %}{% endblock %}
 
