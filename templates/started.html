@@ -68,7 +68,6 @@
           })
             .then(response => response.json())
             .then(data => console.log(data))
-            .catch(error => console.error('Error:', error));
         });
       } else {
         console.error("getUserMedia not supported on this browser");
