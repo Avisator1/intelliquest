@@ -4,14 +4,12 @@ import re
 from PIL import Image
 import fitz
 import pytesseract
+import pymongo
 import easyocr
 from io import BytesIO
 import openai
 
 app = Flask(__name__)
-
-openai.api_key = "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"
-
 
 @app.route('/')
 def index():

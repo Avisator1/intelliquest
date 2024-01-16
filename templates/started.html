@@ -3,6 +3,8 @@
 {% block title %}Get Started{% endblock %}
 
 {% block content %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+
 <style>
     #get-started-page {
         text-align: center;
@@ -21,14 +23,25 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 90vh; /* Adjust the height of the modal body */
+        height: 80vh; /* Adjust the height of the modal body */
+        overflow-y: auto; /* Enable vertical scrolling if content exceeds the modal height */
     }
 
-    #fullPdfObject {
-        width: 100%; /* Set the width of the embedded PDF to 100% */
-        height: 100%; /* Set the height of the embedded PDF to 100% */
+    #the-canvas {
+        max-width: 100%; /* Make sure the canvas doesn't exceed its container */
+        max-height: 100%; /* Make sure the canvas doesn't exceed its container */
+    }
+
+    .textLayer {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        --scale-factor: 1; /* Set the --scale-factor CSS variable */
     }
 </style>
+
 <section id="get-started-page">
     <div class="container">
         <div class="row justify-content-center">
@@ -55,59 +68,101 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="pdfModalLabel">Full-size PDF</h5>
+                <h5 class="modal-title" id="pdfModalLabel">Full-size PDF (Page 1 of 1)</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <!-- Use the object tag to embed the PDF -->
-                <iframe id="fullPdfObject" frameborder="0" scrolling="auto"></iframe>
+                <canvas id="the-canvas"></canvas>
+                <iframe class="textLayer"></iframe>
             </div>
+            <!-- Add navigation buttons inside the modal -->
             <div class="modal-footer">
-                <!-- You can add additional buttons or controls here if needed -->
+                <button type="button" class="btn btn-secondary" id="prevPageBtn">Previous Page</button>
+                <button type="button" class="btn btn-secondary" id="nextPageBtn">Next Page</button>
             </div>
         </div>
     </div>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.js" integrity="sha512-dfMpvQclalfL7nRtHdy4+U2GLYb2XJJOgGLgKibrbcbarI/ZLgCAaBCS6+AuWN0OtLn/zFpu+Cggd8TCBYx9Ag==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.min.js" integrity="sha512-Z8CqofpIcnJN80feS2uccz+pXWgZzeKxDsDNMD/dJ6997/LSRY+W4NmEt9acwR+Gt9OHN0kkI1CTianCwoqcjQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const pdfInput = document.getElementById("pdfInput");
-        const uploadButton = document.getElementById("uploadButton");
-        const pdfModal = new bootstrap.Modal(document.getElementById('pdfModal'));
-        const fullPdfObject = document.getElementById('fullPdfObject');
+    // Set the worker source for PDF.js
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.js';
 
-        let pdfData;  // Move the declaration here
+    function handleUpload() {
+        var fileInput = document.getElementById('pdfInput');
+        var uploadButton = document.getElementById('uploadButton');
 
-        // Handle file selection
-        pdfInput.addEventListener("change", function (event) {
-            const selectedFile = event.target.files[0];
-            if (selectedFile) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    pdfData = e.target.result;
+        uploadButton.addEventListener('click', function () {
+            var file = fileInput.files[0];
 
-                    // Open the modal with the full-size PDF
-                    pdfModal.show();
+            if (file) {
+                var pdfUrl = URL.createObjectURL(file);
 
-                    // Render PDF using PDF.js
-                    renderPdf(pdfData);
-                };
-                reader.readAsDataURL(selectedFile);
+                loadPdf(pdfUrl);
+            } else {
+                alert('Please select a PDF file for upload.');
             }
         });
+    }
 
-        // Function to render PDF using PDF.js
-        function renderPdf(data) {
-            // Set the worker source explicitly
-            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.worker.min.js';
+    function loadPdf(url) {
+        pdfjsLib.getDocument(url).promise.then(function (pdfDoc_) {
+            pdfDoc = pdfDoc_;
+            var canvas = document.getElementById('the-canvas');
+            var textLayer = document.querySelector(".textLayer");
+            var ctx = canvas.getContext('2d');
+            var scale = 1;
 
-            // Clear previous content
-            fullPdfObject.src = '';
+            function renderPage(num) {
+                pdfDoc.getPage(num).then(function (page) {
+                    var viewport = page.getViewport({ scale: scale });
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
 
-            // Load new PDF
-            fullPdfObject.src = data;
-        }
-    });
+                    var renderContext = {
+                        canvasContext: ctx,
+                        viewport: viewport
+                    };
+                    page.render(renderContext);
+
+                    // Enable text selection on the canvas
+                    canvas.style.userSelect = 'text';
+
+                    // Show text layer
+                    pdfjsLib.textLayer.render({
+                        textContent: page.getTextContent(),
+                        container: textLayer,
+                        viewport: viewport,
+                        textDivs: []
+                    });
+                });
+            }
+
+            var numPages = pdfDoc.numPages;
+            var pageNum = 1;
+
+            renderPage(pageNum);
+
+            document.getElementById('prevPageBtn').addEventListener('click', function () {
+                if (pageNum > 1) {
+                    pageNum--;
+                    renderPage(pageNum);
+                }
+            });
+
+            document.getElementById('nextPageBtn').addEventListener('click', function () {
+                if (pageNum < numPages) {
+                    pageNum++;
+                    renderPage(pageNum);
+                }
+            });
+
+            var pdfModal = new bootstrap.Modal(document.getElementById('pdfModal'));
+            pdfModal.show();
+        });
+    }
+
+    handleUpload();
 </script>
 {% endblock %}

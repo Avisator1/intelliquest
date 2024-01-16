@@ -1,0 +1,89 @@
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+</head>
+<section id="get-started-page">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card bg-dark text-white transparent-card get-started-card">
+                    <div class="card-body">
+                        <h2 class="text-center mb-4">Get Started with IntelliQuest</h2>
+                        <div class="mb-3 centerrrrr">
+                            <label class="form-label">Upload PDF</label>
+                            <div>
+                                <input type="file" accept=".pdf" id="pdfInput" />
+                            </div>
+                            <button type="button" class="btn btn-primary get-started-btn" id="uploadButton">Upload PDF</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Bootstrap Modal -->
+<div class="modal fade" id="pdfModal" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="pdfModalLabel">Full-size PDF</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <canvas id="the-canvas"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.js" integrity="sha512-dfMpvQclalfL7nRtHdy4+U2GLYb2XJJOgGLgKibrbcbarI/ZLgCAaBCS6+AuWN0OtLn/zFpu+Cggd8TCBYx9Ag==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+    function handleUpload() {
+        var fileInput = document.getElementById('pdfInput');
+        var uploadButton = document.getElementById('uploadButton');
+
+        uploadButton.addEventListener('click', function () {
+            var file = fileInput.files[0];
+
+            if (file) {
+                var pdfUrl = URL.createObjectURL(file);
+
+                loadPdf(pdfUrl);
+            } else {
+                alert('Please select a PDF file for upload.');
+            }
+        });
+    }
+
+    function loadPdf(url) {
+        pdfjsLib.getDocument(url)
+            .then(function (pdf) {
+                return pdf.getPage(1);
+            })
+            .then(function (page) {
+                var scale = 1.5;
+                var viewport = page.getViewport({ scale: scale });
+
+                var canvas = document.getElementById('the-canvas');
+
+                var context = canvas.getContext('2d');
+
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+
+                var renderContext = {
+                    canvasContext: context,
+                    viewport: viewport
+                };
+
+                page.render(renderContext);
+
+                var pdfModal = new bootstrap.Modal(document.getElementById('pdfModal'));
+                pdfModal.show();
+            });
+    }
+
+    handleUpload();
+</script>
