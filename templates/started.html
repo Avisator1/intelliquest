@@ -75,24 +75,6 @@
     </div>
 </div>
 
-<!-- New Bootstrap Modal for Solved Text Explanation -->
-<div class="modal fade" id="solvedTextModal" tabindex="-1" aria-labelledby="solvedTextModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="solvedTextModalLabel">Solved Text Explanation</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div id="solvedTextContent"></div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            </div>
-        </div>
-    </div>
-</div>
-
 <script>
     function getSelectedText() {
         if (window.getSelection) {
@@ -181,14 +163,10 @@
                 if (selectedText.trim() !== "") {
                     $.ajax({
                         type: "POST",
-                        url: "/send_text",
+                        url: "/send_text", 
                         data: { text: selectedText },
                         success: function (response) {
-                            console.log("Text sent successfully:", response);
-                            // Update the modal with the solved text
-                            $('#pdfModal').modal('hide');
-                            openSolvedTextModal(response.solved_text);
-                        },
+                            console.log("Text sent successfully:", response);                        },
                         error: function (error) {
                             console.error("Error sending text:", error);
                         }
@@ -198,13 +176,6 @@
                 }
             });
         });
-    }
-
-    function openSolvedTextModal(solvedText) {
-        // Open a new modal with the solved text
-        var solvedTextModal = new bootstrap.Modal(document.getElementById('solvedTextModal'));
-        document.getElementById('solvedTextContent').innerText = solvedText;
-        solvedTextModal.show();
     }
 
     handleUpload();

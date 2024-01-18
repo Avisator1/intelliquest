@@ -1,11 +1,6 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for
-import base64
-import re
 from PIL import Image
-import fitz
-import pytesseract
-import pymongo
-import easyocr
+
 from io import BytesIO
 import openai
 import requests
