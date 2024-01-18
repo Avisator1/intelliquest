@@ -8,6 +8,8 @@ import pymongo
 import easyocr
 from io import BytesIO
 import openai
+import requests
+
 
 app = Flask(__name__)
 
@@ -27,6 +29,29 @@ def register():
 def started():
     return render_template('started.html', started=True)
 
+
+@app.route('/send_text', methods=['POST'])
+def send_text():
+    selected_text = request.form.get('text')
+    print(selected_text)
+
+    url = 'http://75.28.163.79:6069/api/generate'
+
+    def ollama(model, prompt):
+        request_data = {"model": model,
+                        "prompt": prompt,
+                        "stream": False
+                        }
+        response = requests.post(url, json=request_data)
+        response.raise_for_status()    
+        output = response.json()["response"]
+        response.close()
+
+        return output
+
+    solved_text = ollama("llama2", f"Give me a very short 2 sentences explanation of this question that i am  showing you afer this period. {selected_text}")
+    print(solved_text)
+    return render_template("started.html", solved_text=solved_text)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True, port=80)
