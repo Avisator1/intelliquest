@@ -44,9 +44,12 @@ def send_text():
 
         return output
 
-    solved_text = ollama("llama2", f"Give me a very short 2 sentences explanation of this question that i am  showing you afer this period. {selected_text}")
+    solved_text = ollama("llama2", f"Give me a very short 2 sentences explanation of this question that I am showing you after this period. {selected_text}")
     print(solved_text)
-    return render_template("started.html", solved_text=solved_text)
+
+    # Return JSON response
+    return jsonify({'solved_text': solved_text})
+
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True, port=80)

@@ -58,7 +58,7 @@
 <!-- Bootstrap Modal -->
 <div class="modal fade" id="pdfModal" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content">
+        <div class="modal-content bg-dark text-white">
             <div class="modal-header">
                 <h5 class="modal-title" id="pdfModalLabel">Highlight the problem that you want to solve</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -70,6 +70,23 @@
                 <button type="button" class="btn btn-secondary" id="prevPageBtn">Previous Page</button>
                 <button type="button" class="btn btn-secondary" id="nextPageBtn">Next Page</button>
                 <button type="button" class="btn btn-primary" id="sendTextBtn">Send Text</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="solvedTextModal" tabindex="-1" aria-labelledby="solvedTextModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header">
+                <h5 class="modal-title" id="solvedTextModalLabel">Solved Question</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="solvedTextContent"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -166,7 +183,11 @@
                         url: "/send_text", 
                         data: { text: selectedText },
                         success: function (response) {
-                            console.log("Text sent successfully:", response);                        },
+                            console.log("Text sent successfully:", response);
+                            // Show the additional modal with solved text
+                            $('#solvedTextModal #solvedTextContent').text(response.solved_text);
+                            $('#solvedTextModal').modal('show');
+                        },
                         error: function (error) {
                             console.error("Error sending text:", error);
                         }
