@@ -4,7 +4,7 @@ import requests
 
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = '1A37BbcCJh67'
+app.config['SECRET_KEY'] = 'JRWIOARJOWRJWOIRJWOIRJAWIORJIWRJAWIORJWIORJIWORJAWIORJWIORJWIORJAWOIRJAOWRJORJOWRJOWRJOWRJWRDAWFGGH'
 @app.route('/')
 def index():
     return render_template('index.html', home=True)
