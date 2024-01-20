@@ -1,24 +1,14 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for
-from PIL import Image
-
 from io import BytesIO
-import openai
 import requests
 
 
 app = Flask(__name__)
-
+app.config['SECRET_KEY'] = '1A37BbcCJh67'
 @app.route('/')
 def index():
     return render_template('index.html', home=True)
 
-@app.route('/login')
-def login():
-    return render_template('login.html', login=True)
-
-@app.route('/register')
-def register():
-    return render_template('register.html', register=True)
 
 @app.route('/getstarted')
 def started():
@@ -47,9 +37,7 @@ def send_text():
     solved_text = ollama("llama2", f"Hi Ollama, i am about to ask you a question and i need you to follow this critera: dont repeat the question which i ask, and just provide the answer and the explanation and nothing else. The question will be present after this period. {selected_text}")
     print(solved_text)
 
-    # Return JSON response
     return jsonify({'solved_text': solved_text})
 
-
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True, port=80)
+if __name__ == "__main__":
+    app.run(host='0.0.0.0', port=80, debug=True)
