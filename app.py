@@ -44,7 +44,7 @@ def send_text():
 
         return output
 
-    solved_text = ollama("llama2", f"Give me a very short 2 sentences explanation of this question that I am showing you after this period. {selected_text}")
+    solved_text = ollama("llama2", f"Hi Ollama, i am about to ask you a question and i need you to follow this critera: dont repeat the question which i ask, and just provide the answer and the explanation and nothing else. The question will be present after this period. {selected_text}")
     print(solved_text)
 
     # Return JSON response
