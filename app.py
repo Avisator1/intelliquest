@@ -20,7 +20,7 @@ def send_text():
     selected_text = request.form.get('text')
     print(selected_text)
 
-    url = 'http://75.28.163.79:6069/api/generate'
+    url = ''
 
     def ollama(model, prompt):
         request_data = {"model": model,
